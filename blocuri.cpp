@@ -1,6 +1,9 @@
 
 // Amadaugatuncomentariu
 
+
+// am adaugat niste cod
+
 #include <iostream>
 using namespace std;
 
