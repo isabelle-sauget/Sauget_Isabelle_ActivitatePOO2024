@@ -11,9 +11,7 @@ using namespace std;
 //in fiecare clasa cate o functie statica 
 //
 
-string Ghiveci::culoare = "maro";
-float Fertilizant::concentratiePotasiu = 2.4f;
-int Seminte::cantitate = 100;
+
 
 //Gradinarit
 
@@ -48,20 +46,20 @@ public:
 	}
 
 
-	void AfisareG()
+	 void static AfisareG(const Ghiveci& ghiveci )
 	{
-		cout << "Materialul: " << this->material << endl;
-		cout << "Este ghiveciul cilindric?( 1-DA, 0-NU): " << this->esteCilindric << endl;
+		cout << "Materialul: " << ghiveci.material << endl;
+		cout << "Este ghiveciul cilindric?( 1-DA, 0-NU): " << ghiveci.esteCilindric << endl;
 		cout << "Culoarea: " << Ghiveci::culoare << endl; //static
-		cout << "Volum ghiveci( in litri): " << this->volum << endl;
+		cout << "Volum ghiveci( in litri): " << ghiveci.volum << endl;
 	}
 
-	static void modificaCuloare(string nouaCuloare)
+	static void modificaCuloare(string nouaCuloare, const Ghiveci& ghiveci)
 	{
 		if (nouaCuloare != "")
 			Ghiveci::culoare = nouaCuloare;
 		cout << "Rezultatul modificarii culorii: " << endl;
-		Ghiveci::AfisareG();
+		Ghiveci::AfisareG(ghiveci);
 	}
 
 };
@@ -79,6 +77,7 @@ public:
 		anulExpirarii(2027)
 	{
 		this->esteOrganic = true;
+		this->pret = 10;
 
 	}
 
@@ -99,8 +98,8 @@ public:
 
 	void AfisareF()
 	{
-		cout << "Este fertilizantul organic?: " << this->esteOrganic << endl;
-		cout << "Care este concentratia de sodiu?( in %): " << Fertilizant::concentratieSodiu << endl;
+		cout << "Este fertilizantul organic? ( 1-DA, 0-NU): " << this->esteOrganic << endl;
+		cout << "Care este concentratia de sodiu?( in %): " << Fertilizant::concentratiePotasiu << endl;
 		cout << "Cand expira?: " << this->anulExpirarii << endl;
 		cout << "Pret: " << this->pret << endl;
 	}
@@ -130,6 +129,7 @@ public:
 		timpPanaLaRasadire(15)
 	{
 		this->speciePlanta = "anthurium";
+		this->dimensiune = 0.1f;
 
 	}
 
@@ -147,7 +147,9 @@ public:
 		this->dimensiune = 0.9f;
 	}
 
-	AfisareS()
+	
+
+	 void AfisareS()
 	{
 		cout << "Specia plantei: " << this->speciePlanta << endl;
 		cout << "Cantitate pachet( cate seminte contine un pliculet): " << Seminte::cantitate << endl;
@@ -156,47 +158,82 @@ public:
 
 	}
 
-	static int catePliculete(int nrSeminteCeruteSpreVanzare)
+	
+
+	static int catePliculete( int nrSeminteCeruteSpreVanzare)
 	{
-		return nrseminteCeruteSpreVanzare / Seminte::cantitate;
+		return nrSeminteCeruteSpreVanzare / Seminte::cantitate;
 	}
+
+
+	
+
 
 };
 
-
+string Ghiveci::culoare = "maro";
+float Fertilizant::concentratiePotasiu = 2.4f;
+int Seminte::cantitate = 100;
 
 int main()
 {
-	int nrseminteCeruteSpreVanzare = 600;
+	int nrSeminteCeruteSpreVanzare = 600;
+
+	//cate un pointer la fiecare clasa
 
 	Ghiveci* pointerG;
 	pointerG = new Ghiveci("lemn", false, 4);
-	pointerG->AfisareG;
+	pointerG->AfisareG(*pointerG);
 
 	Fertilizant* pointerF;
 	pointerF = new Fertilizant(true, 2028);
-	pointerF->AfisareF;
+	pointerF->AfisareF();
 
 	Seminte* pointerS;
 	pointerS = new Seminte("scadens micans", 20, 0.2);
-	pointerS->AfisareS;
+	pointerS->AfisareS();
 
 	delete pointerG;
 	delete pointerF;
 	delete pointerS;
 
+	//exemplu apelare constructor 1 fara parametri
 
 	Ghiveci g1;
-	g1.AfisareG();
-	g1.modificaCuloare("alb");
+	g1.AfisareG(g1);
+	g1.modificaCuloare("alb",g1);
 
 	Fertilizant f1;
 	f1.AfisareF();
-	(f1.potrivitPentruOrhidei() ? cout << " Este potrivit pentru orhidei." : cout << "Nu este potrivit pentru orhidei.")
+	(f1.potrivitPentruOrhidei() ? cout << " Este potrivit pentru orhidei." << endl : cout << "Nu este potrivit pentru orhidei." << endl);
 
-		Seminte s1;
+	Seminte s1;
 	s1.AfisareS();
-	//s1.catePliculete()
+	cout << "Numarul necesar de pliculete pentru "<< nrSeminteCeruteSpreVanzare <<" seminte este de:  " << s1.catePliculete(nrSeminteCeruteSpreVanzare) << endl;
+	
+	//exemplu apelare constructor 2 cu 2 parametri
+
+	Ghiveci g2("plastic", 15);
+	g2.AfisareG(g2);
+	
+	Fertilizant f2(false,2028);
+	f2.AfisareF();
+
+	Seminte s2("phalaenopsis",20);
+	s2.AfisareS();
+
+	//exemplu apelare constructor 3 cu 3 parametri
+
+	Ghiveci g3("rasina", true, 35);
+	g3.AfisareG(g3);
+
+	Fertilizant f3(true, 2024, 45);
+	f3.AfisareF();
+
+	Seminte s3("scindapsus pictus", 5, 0.25);
+	s3.AfisareS();
+
+	
 
 
 
