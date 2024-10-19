@@ -9,7 +9,7 @@ using namespace std;
 //cate trei constructori pentru fiecare clasa cu numar diferit de parametri
 //in cadrul constructorilor initializati toate atributele claselor
 //in fiecare clasa cate o functie statica 
-
+//
 
 string Ghiveci::culoare = "maro";
 float Fertilizant::concentratiePotasiu = 2.4f;
