@@ -9,7 +9,7 @@ using namespace std;
 //cate trei constructori pentru fiecare clasa cu numar diferit de parametri
 //in cadrul constructorilor initializati toate atributele claselor
 //in fiecare clasa cate o functie statica 
-//
+//...
 
 
 
@@ -17,11 +17,13 @@ using namespace std;
 
 class Ghiveci {
 
-public:
+private:
 	string material;
 	bool esteCilindric;
 	static string culoare;
 	const int volum;
+
+public:
 
 	Ghiveci() :
 		volum(5)
@@ -34,27 +36,27 @@ public:
 	Ghiveci(string Material, bool cilindric, int Volum) :
 		volum(2)
 	{
-		this->material = "plastic";
+		this->material ="plastic";
 		this->esteCilindric = true;
 	}
 
 	Ghiveci(string Material, int Volum) :
 		volum(6)
 	{
-		this->material = "piatra";
+		this->material ="piatra";
 		this->esteCilindric = false;
 	}
 
 
 	 void static AfisareG(const Ghiveci& ghiveci )
 	{
-		cout << "Materialul: " << ghiveci.material << endl;
+		cout << "Materialul: " << ghiveci.culoare << endl;
 		cout << "Este ghiveciul cilindric?( 1-DA, 0-NU): " << ghiveci.esteCilindric << endl;
 		cout << "Culoarea: " << Ghiveci::culoare << endl; //static
 		cout << "Volum ghiveci( in litri): " << ghiveci.volum << endl;
 	}
 
-	static void modificaCuloare(string nouaCuloare, const Ghiveci& ghiveci)
+	 static void modificaCuloare(string nouaCuloare, const Ghiveci& ghiveci)
 	{
 		if (nouaCuloare != "")
 			Ghiveci::culoare = nouaCuloare;
@@ -71,13 +73,17 @@ public:
 	bool esteOrganic;
 	static float concentratiePotasiu;
 	const int anulExpirarii;
-	int pret;
+	int *pret;
 
 	Fertilizant() :
 		anulExpirarii(2027)
 	{
 		this->esteOrganic = true;
-		this->pret = 10;
+		this->pret = new int [3];
+		for (int i = 0; i < 2; i++)
+		{
+			this->pret[i] = i + i * 2;
+		}
 
 	}
 
@@ -85,14 +91,27 @@ public:
 		anulExpirarii(2025)
 	{
 		this->esteOrganic = false;
-		this->pret = 20;
+		this->pret = new int[4];
+		for (int i = 0; i < 3; i++)
+		{
+			this->pret[i] = i + i * 3;
+		}
 	}
 
 	Fertilizant(bool organic, int expirare, int Pret) :
 		anulExpirarii(2026)
 	{
 		this->esteOrganic = false;
-		this->pret = 35;
+		this->pret = new int[3];
+		for (int i = 0; i < 2; i++)
+		{
+			this->pret[i] = i +3;
+		}
+	}
+
+	~Fertilizant() {
+		if (this->pret)
+			delete[]this->pret;
 	}
 
 
@@ -101,7 +120,10 @@ public:
 		cout << "Este fertilizantul organic? ( 1-DA, 0-NU): " << this->esteOrganic << endl;
 		cout << "Care este concentratia de sodiu?( in %): " << Fertilizant::concentratiePotasiu << endl;
 		cout << "Cand expira?: " << this->anulExpirarii << endl;
-		cout << "Pret: " << this->pret << endl;
+		cout << "Pret: " << endl;
+		for (int i = 0; i < 3; i++) { 
+			cout << pret[i] << " ";
+		}
 	}
 
 	static bool potrivitPentruOrhidei()
@@ -123,13 +145,13 @@ public:
 	string speciePlanta;
 	static int cantitate;
 	const int timpPanaLaRasadire;
-	float dimensiune;
+	float * dimensiune;
 
 	Seminte() :
 		timpPanaLaRasadire(15)
 	{
 		this->speciePlanta = "anthurium";
-		this->dimensiune = 0.1f;
+		this->dimensiune = new float(0.1f);
 
 	}
 
@@ -137,24 +159,30 @@ public:
 		timpPanaLaRasadire(7)
 	{
 		this->speciePlanta = "monstera";
-		this->dimensiune = 0.4f;
+		this->dimensiune = new float(0.4f);
 	}
 
 	Seminte(string specie, int rasadire, float dimens) :
 		timpPanaLaRasadire(7)
 	{
 		this->speciePlanta = "syngonium";
-		this->dimensiune = 0.9f;
+		this->dimensiune = new float(dimens);
 	}
 
 	
+	~Seminte()
+	{
+		if (this->dimensiune)
+			delete[]this->dimensiune;
+	}
+
 
 	 void AfisareS()
 	{
 		cout << "Specia plantei: " << this->speciePlanta << endl;
 		cout << "Cantitate pachet( cate seminte contine un pliculet): " << Seminte::cantitate << endl;
 		cout << "Timp pana rasade( in zile): " << this->timpPanaLaRasadire << endl;
-		cout << "Dimensiune seminte( in milimetri): " << this->dimensiune << endl;
+		cout << "Dimensiune seminte( in milimetri): " << *dimensiune << endl;
 
 	}
 
