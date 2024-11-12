@@ -2,14 +2,7 @@
 using namespace std;
 
 
-//3 obiecte apartinand aceluiasi domeniu
-//cate 3 clase cu atribute normale, statice si constante
-//atribute definite in zona publica a clasei
-//in fiecare clasa -> cel putin un pointer pentru care vom aloca spatiu in HEAP
-//cate trei constructori pentru fiecare clasa cu numar diferit de parametri
-//in cadrul constructorilor initializati toate atributele claselor
-//in fiecare clasa cate o functie statica 
-//...
+//cate 4 operatori pentru fiecare din cele 3 clase + implementari
 
 
 
@@ -106,16 +99,25 @@ public:
 	{
 		cout << "Material: ";
 		input >> g.material;
-		cout << "Este cilindric? 1-DA, 0-NU";
+		cout << "Este cilindric? (1-DA, 0-NU): ";
 		input >> g.esteCilindric;
 		cout << "Culoarea: ";
 		input >> g.culoare;
-		cout << "Volumul: ";
 		
 		return input;
 	}
 
-	
+	// (g1 < g2? cout<<" G2 este clindric.":cout<<" G2 nu este cilindric.");
+	bool operator<(const Ghiveci& g) const
+	{
+		return this->esteCilindric < g.esteCilindric;
+	}
+
+	// !g1
+	bool operator!() const
+	{
+		return !esteCilindric;
+	}
 
 };
 
@@ -245,6 +247,17 @@ public:
 
 	friend int PretMediu(const Fertilizant& f);
 
+	//pret mediu
+	int operator()() //primeste *this
+	{
+		int s = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			s += this->pret[i];
+		}
+		return s / 3;
+	}
+
 
 	//f3=f1+f2;
 	//concatenam vectorul pret din f1 cu vectorul pret din f2
@@ -252,7 +265,7 @@ public:
 	{
 		//f3, adica rezultatul, il vom stoca in temp
 		Fertilizant temp = *this; //de ce ne trebuie temp si aux??
-		int* aux = new int[3];
+		int* aux = new int[6];
 		for (int i = 0; i < 3; i++)
 		{
 			aux[i] = this->pret[i];
@@ -312,7 +325,7 @@ public:
 		{
 			temp.pret[i] = f.pret[i];
 		}
-		temp.pret[4] = pret;
+		temp.pret[3] = pret;
 		//indexul trebuie incrementat daca este un atribut
 		return temp;
 
@@ -325,7 +338,10 @@ public:
 		return *this;
 	}
 
-
+	explicit operator bool()
+	{
+		return this->esteOrganic;
+	}
 
 };
 
@@ -417,7 +433,80 @@ public:
 		}
 	}
 
+	explicit operator string()
+	{
+		return this->speciePlanta;
+	}
 
+
+	//s1= s2 + 2;
+
+	Seminte operator+(float dimensiune)
+	{
+		Seminte temp = *this;
+		if (temp.dimensiune != NULL)
+		{
+			delete[]temp.dimensiune;
+		}
+		temp.dimensiune = new float[2];
+		temp.dimensiune[0] = this->dimensiune[0];
+		temp.dimensiune[1] = dimensiune;
+
+		return temp;
+	}
+
+
+	// s1 = s2 - 2;
+	Seminte operator-(float dimensiune)
+	{
+		Seminte temp = *this; //copie a obiectului curent
+		if (temp.dimensiune != NULL)
+		{
+			delete temp.dimensiune;
+		}
+		temp.dimensiune = new float(this->dimensiune[0] - dimensiune);
+		return temp;
+	}
+	
+
+	//s1= s2 - s3;
+	Seminte operator-(const Seminte &s)
+	{
+		Seminte temp = *this; //copie a obiectului curent
+		if (temp.dimensiune != NULL)
+		{
+			delete temp.dimensiune;
+		}
+		temp.dimensiune = new float(this->dimensiune[0] - s.dimensiune[0]);
+		return temp;
+	}
+
+	//s1 -= s2;
+	Seminte& operator-=(const Seminte &s)
+	{
+		*this = *this - s;
+		return *this;
+	}
+
+	/*string speciePlanta;
+	static int cantitate;
+	const int timpPanaLaRasadire;
+	float* dimensiune;*/
+
+ // s1 = s3;
+	Seminte operator=(const Seminte &s)
+	{
+		if (&s != this)
+		{
+			this->speciePlanta = s.speciePlanta;
+			if (this->dimensiune != NULL)
+			{
+				delete this->dimensiune;
+			}
+			this->dimensiune = new float(s.dimensiune[0]);
+		}
+		return *this;
+	}
 
 
 
@@ -478,7 +567,7 @@ int main()
 	Fertilizant f1;
 	f1.AfisareF();
 	cout << endl;
-	(f1.potrivitPentruOrhidei() ? cout << " Este potrivit pentru orhidei." << endl : cout << "Nu este potrivit pentru orhidei." << endl);
+	(f1.potrivitPentruOrhidei() ? cout << "Este potrivit pentru orhidei." << endl : cout << "Nu este potrivit pentru orhidei." << endl);
 
 	Seminte s1;
 	s1.AfisareS();
@@ -530,6 +619,11 @@ int main()
 
 
 	f1 = f2 + f3;
+	f1 = 20 + f2;
+	s1 = s2;
+	s1 -= s2;
+	s2 = s3 - 1;
+	s2 = s1 - s3;
 
 	try
 	{
@@ -539,7 +633,23 @@ int main()
 	catch(const char* exceptie) {
 		cout << exceptie << endl;
 	}
+
+	(g1 < g2 ? cout << " G2 este clindric." : cout << " G2 nu este cilindric.");
 	
+	cout << endl;
+	if (!g1)
+		cout << " G1 nu este cilindric." << endl;
+
+
+	//operator functie
+	cout << f1() << endl;
+
+
+	string speciePlanta = (string)s1;
+	bool esteOrganic = (bool)f1;
+
+	cout << g1;
+	cin >> g2;
 
 
 	return 0;
