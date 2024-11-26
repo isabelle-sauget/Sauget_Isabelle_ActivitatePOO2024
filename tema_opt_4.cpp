@@ -2,11 +2,188 @@
 using namespace std;
 
 
-//cate 4 operatori pentru fiecare din cele 3 clase + implementari
-
-
 
 //Gradinarit
+
+
+class KitGradinarit
+{
+private:
+	Ghiveci *ghiveci; //vector de obiecte de tip Ghiveci
+	Fertilizant fzant; //un singur obiect Fertilizant
+	Seminte **pachet; //vector de pointeri la obiecte de tip Seminte
+	float pret;
+public:
+	KitGradinarit()
+	{
+		this->ghiveci = new Ghiveci[2];
+		this->pachet = new Seminte*[2];
+		for (int i = 0; i < 3; i++)
+		{
+			pachet[i] = new Seminte();
+		}
+		this->pret = 29.99;
+
+	}
+
+	KitGradinarit(const KitGradinarit& k)
+	{
+		this->ghiveci = new Ghiveci[2];
+		for (int i = 0; i < 2; i++)
+		{
+			this->ghiveci[i] = k.ghiveci[i];
+		}
+		this->fzant = k.fzant;
+		this->pachet = new Seminte * [2];
+		for (int i = 0; i < 2; i++)
+		{
+			this->pachet[i] = new Seminte(*k.pachet[i]);
+		}
+		this->pret = k.pret;
+	}
+
+
+	~KitGradinarit()
+	{
+		delete[] this->ghiveci;
+		for (int i = 0; i < 2; i++)
+		{
+			delete this->pachet[i];
+		}
+		delete[]pachet;
+
+	}
+
+	Ghiveci& getGhiveci(int index) const
+	{
+		if (index >= 0 && index < 2)
+		{
+			return this->ghiveci[index];
+		}
+	}
+
+	void setGhiveci(const Ghiveci* ghiveciNou)
+	{
+		
+		if (this->ghiveci)
+		{
+			delete[] this->ghiveci;
+		}
+		this->ghiveci = new Ghiveci[2];
+		for (int i = 0; i < 2; i++)
+		{
+			this->ghiveci[i] = ghiveciNou[i];
+		}
+	}
+
+	const Seminte& getPachet(int index)
+	{
+		if (index >= 0 && index < 2)
+		{
+			return *(this->pachet[index]);
+		}
+	}
+
+	void setPachet(const Seminte** pachetnou)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (this->pachet[i])
+			{
+				delete[]this->pachet[i];
+			}
+			delete[]this->pachet;
+		}
+	}
+	
+
+	//k1++;
+	//++k1;
+	KitGradinarit& operator++()
+	{
+		Ghiveci* aux1 = new Ghiveci[3];
+		for (int i = 0; i < 2; i++)
+		{
+			aux1[i] = this->ghiveci[i];
+		}
+		aux1[2] = Ghiveci();
+
+		delete[]this -> ghiveci;
+		this->ghiveci = aux1;
+
+		Seminte** aux2 = new Seminte * [3];
+		for(int i = 0; i < 2; i++)
+		{
+			aux2[i] = this->pachet[i];
+		}
+		aux2[2] = new Seminte();
+
+		for (int i = 0; i < 2; i++)
+		{
+			delete[]this->pachet[i];
+		}
+		delete[]this->pachet;
+
+		this->pachet = aux2;
+		return *this;
+
+	}
+
+
+	//k1++;
+	KitGradinarit& operator++()
+	{
+		KitGradinarit temp = *this;
+		++(*this);
+		return temp;
+		//returnam copia veche
+	}
+
+	
+	friend ostream& operator<<(ostream& o, const KitGradinarit& k)
+	{
+		/*Ghiveci* ghiveci; //vector de obiecte de tip Ghiveci
+		Fertilizant fzant; //un singur obiect Fertilizant
+		Seminte** pachet; //vector de pointeri la obiecte de tip Seminte
+		float pret;*/
+
+		o << "Ghivecele sunt: "<< endl;
+		if (k.ghiveci)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				o << k.ghiveci[i] << ", ";
+			}
+			cout << endl;
+		}
+		o << "Fertilizantul este :" << k.fzant << endl;
+
+		//afisare pentru un vector de pointeri
+		o << "Semintele sunt: " << endl;
+		if (k.pachet)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				if (k.pachet[i])
+				{
+					o << *(k.pachet[i]);
+				}
+			}
+		}
+
+	
+		o << "Pretul este: " << k.pret << endl;
+
+
+	}
+
+
+
+
+};
+
+
+
 
 class Ghiveci {
 
@@ -119,6 +296,25 @@ public:
 		return !esteCilindric;
 	}
 
+
+	Ghiveci& operator=(const Ghiveci& g)
+	{
+		if (this != &g)
+		{
+
+			/*string material;
+			bool esteCilindric;
+			static string culoare;
+			const int volum;*/
+
+			this->material = g.material;
+			this->esteCilindric = g.esteCilindric;
+		}
+		return *this;
+	}
+
+
+
 };
 
 
@@ -191,13 +387,13 @@ public:
 
 	static void setConcentratiePNoua(float cpnoua)
 	{
-		if (concentratiePotasiu > 0)
+		if (cpnoua > 0)
 		{
 			concentratiePotasiu = cpnoua;
 		}
 		else
 		{
-			cout << "Concentratia de potasiu nu poate fi negativa." << endl;
+			throw "Concentratia de potasiu nu poate fi negativa.";
 		}
 	}
 
@@ -224,12 +420,14 @@ public:
 
 	}
 
-	int getPret()
+	int* getPret()
 	{
-		for (int i = 0; i < 3; i++)
+		/*for (int i = 0; i < 3; i++)
 		{
 			return this->pret[i];
-		}
+		}*/
+
+		return this->pret;
 	}
 
 	void setPret(int* pret)
@@ -343,6 +541,25 @@ public:
 		return this->esteOrganic;
 	}
 
+	friend ostream& operator<<(ostream& o, Fertilizant f)
+	{
+		/*bool esteOrganic;
+		static float concentratiePotasiu;
+		const int anulExpirarii;
+		int* pret;*/
+
+		o << "Este organic? " << (f.esteOrganic ? "DA" : "NU") << endl;
+		o << "Concentratie potasiu: " << Fertilizant::concentratiePotasiu << endl;
+		o << "Anul expirarii: " << f.anulExpirarii <<endl;
+		if (f.pret)
+		{
+			for (int i = 0; i < 3; i++)
+				o << f.pret[i] << ", ";
+		}
+		o << endl;
+		return o;
+	}
+
 };
 
 class Seminte {
@@ -422,7 +639,7 @@ public:
 	float& operator[](int index)
 	{
 		//am pus un singur element in vector, deci 1
-		if (index >= 0 && index < 1)
+		if (index >= 0 && index < 1) //index =0;
 		{
 			return this->dimensiune[index];
 		}
@@ -506,6 +723,37 @@ public:
 			this->dimensiune = new float(s.dimensiune[0]);
 		}
 		return *this;
+	}
+
+	//returns a Seminte object
+	//++s1;
+	Seminte operator++()
+	{
+		this->dimensiune[0] = this->dimensiune[0] + 1;
+		return *this;
+	}
+
+
+	//s1++;
+	Seminte operator++(int) //int este fictiv si doar ajuta compilatorul sa diferentieze cei doi operatori intre ei
+	{
+		Seminte aux = *this;
+		this->dimensiune[0] = this->dimensiune[0] + 1;
+		return aux;
+	}
+
+
+	friend ostream& operator<<(ostream& o, Seminte s)
+	{
+		o << s.speciePlanta << endl;
+		o << Seminte::cantitate << endl;
+		o << s.timpPanaLaRasadire << endl;
+		if (s.dimensiune)
+		{
+			o << *(s.dimensiune) << endl; //un singur pointer
+		}
+
+		return o;
 	}
 
 
