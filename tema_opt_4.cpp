@@ -3,7 +3,9 @@ using namespace std;
 
 
 
-//Gradinarit
+//clasa care mosteneste 2 clase de baza mai jos, dupa Ghiveci si dupa Seminte
+//clasa KitGradinarit cu relatii de "has a"
+//vectori de obiecte
 
 
 class KitGradinarit
@@ -203,17 +205,17 @@ public:
 
 	}
 
-	Ghiveci(string Material, bool cilindric, int Volum) :
-		volum(2)
+	Ghiveci(string material, bool cilindric, int Volum) :
+		volum(Volum)
 	{
-		this->material = "plastic";
-		this->esteCilindric = true;
+		this->material = material;
+		this->esteCilindric = cilindric;
 	}
 
 	Ghiveci(string Material, int Volum) :
-		volum(6)
+		volum(Volum)
 	{
-		this->material = "piatra";
+		this->material = Material;
 		this->esteCilindric = false;
 	}
 
@@ -320,8 +322,9 @@ public:
 
 class Fertilizant {
 
-private:
+protected:
 	bool esteOrganic;
+private:
 	static float concentratiePotasiu;
 	const int anulExpirarii;
 	int* pret;
@@ -341,9 +344,9 @@ public:
 	}
 
 	Fertilizant(bool organic, int expirare) :
-		anulExpirarii(2025)
+		anulExpirarii(expirare)
 	{
-		this->esteOrganic = false;
+		this->esteOrganic = organic;
 		this->pret = new int[3];
 		for (int i = 0; i < 3; i++)
 		{
@@ -351,7 +354,8 @@ public:
 		}
 	}
 
-	Fertilizant(bool organic, int expirare, int Pret) :
+
+	/*Fertilizant(bool organic, int expirare, int Pret) :
 		anulExpirarii(2026)
 	{
 		this->esteOrganic = false;
@@ -360,7 +364,7 @@ public:
 		{
 			this->pret[i] = i + 3;
 		}
-	}
+	}*/
 
 	Fertilizant(const Fertilizant& f) :
 		anulExpirarii(f.anulExpirarii)
@@ -398,7 +402,7 @@ public:
 	}
 
 
-	void AfisareF()
+	const void AfisareF()
 	{
 		cout << "Este fertilizantul organic? ( 1-DA, 0-NU): " << this->esteOrganic << endl;
 		cout << "Care este concentratia de sodiu?( in %): " << Fertilizant::concentratiePotasiu << endl;
@@ -562,6 +566,76 @@ public:
 
 };
 
+
+//clasa care mosteneste clasa Fertilizant, FertilizantLichid este un Fertilizant
+class FertilizantLichid : public Fertilizant
+{
+private:
+	int vascozitate;
+	string culoare;
+
+public:
+	FertilizantLichid(): Fertilizant()
+	{
+		this->vascozitate = 3;
+		this->culoare = "transparent";
+	}
+
+	FertilizantLichid(int vasc, string cul) : Fertilizant(1, 2029)
+	{
+		this->vascozitate = vasc;
+		this->culoare = cul;
+	}
+
+	FertilizantLichid(const FertilizantLichid& fl) :
+		Fertilizant(fl)
+	{
+		this->vascozitate = fl.vascozitate;
+		this->culoare = fl.culoare;
+	}
+
+	FertilizantLichid operator=(const FertilizantLichid& fl)
+	{
+		if (&fl != this)
+		{
+			(Fertilizant)*this = (Fertilizant)fl; //upcasting la clasa de baza
+			this->vascozitate = fl.vascozitate;
+			this->culoare = fl.culoare;
+		}
+		return *this;
+	}
+
+	string getCuloare()
+	{
+		return this->culoare;
+	}
+
+	bool getOrganic()
+	{
+		return this->esteOrganic; //atribut protected din clasa de baza
+	}
+
+	friend ostream& operator<<(ostream& o, const FertilizantLichid& fl)
+	{
+		o << (Fertilizant)fl << endl;
+		o << "Vascozitate: " << fl.vascozitate << endl;
+		o << "Culoarea: " << fl.culoare << endl;
+
+		return o;
+	}
+
+
+
+
+};
+
+
+
+
+
+
+
+
 class Seminte {
 
 private:
@@ -581,16 +655,16 @@ public:
 	}
 
 	Seminte(string specie, int rasadire) :
-		timpPanaLaRasadire(7)
+		timpPanaLaRasadire(rasadire)
 	{
-		this->speciePlanta = "monstera";
+		this->speciePlanta = specie;
 		this->dimensiune = new float(0.4f);
 	}
 
 	Seminte(string specie, int rasadire, float dimens) :
-		timpPanaLaRasadire(7)
+		timpPanaLaRasadire(rasadire)
 	{
-		this->speciePlanta = "syngonium";
+		this->speciePlanta = specie;
 		this->dimensiune = new float(dimens);
 	}
 
@@ -598,14 +672,14 @@ public:
 		timpPanaLaRasadire(s.timpPanaLaRasadire)
 	{
 		this->speciePlanta = s.speciePlanta;
-		this->dimensiune = new float(0.05f);
+		this->dimensiune = new float(*(s.dimensiune));
 	}
 
 
 	~Seminte()
 	{
 		if (this->dimensiune)
-			delete[]this->dimensiune;
+			delete this->dimensiune;
 	}
 
 
@@ -760,6 +834,113 @@ public:
 
 };
 
+
+class PachetPromotional : public Ghiveci, public Seminte
+{
+private:
+	float* reducere;
+	int varianteReducere; //count ul reducerilor
+public:
+
+	PachetPromotional() : Ghiveci(), Seminte()
+	{
+		this->varianteReducere = 3;
+		this->reducere = new float[varianteReducere];
+		for (int i = 0; i < varianteReducere; i++)
+		{
+			this->reducere[i] = 0.15f + (float)i / 5;
+		}
+	}
+
+	PachetPromotional(const PachetPromotional& p) :
+		Ghiveci(p), Seminte(p)
+	{
+		this->varianteReducere = p.varianteReducere;
+		if (this->reducere)
+		{
+			delete[] this->reducere;
+		}
+		this->reducere = new float[p.varianteReducere];
+		for (int i = 0; i < p.varianteReducere; i++)
+		{
+			this->reducere[i] = p.reducere[i];
+		}
+
+	}
+
+	~PachetPromotional()
+	{
+		delete[] this->reducere;
+	}
+
+	PachetPromotional operator=(const PachetPromotional& p)
+	{
+		if (&p != this)
+		{
+			(Ghiveci)*this = (Ghiveci)p;
+			(Seminte)*this = (Seminte)p;
+			if (this->reducere)
+			{
+				delete[] this->reducere;
+			}
+			this->reducere = new float[p.varianteReducere];
+			for (int i = 0; i < p.varianteReducere; i++)
+			{
+				this->reducere[i] = p.reducere[i];
+			}
+
+		}
+		return *this;
+	}
+
+	void setReducere(float* reducere, int varianteReducere)
+	{
+		this->varianteReducere = varianteReducere;
+		if (this->reducere)
+		{
+			delete[] this->reducere;
+		}
+		this->reducere = new float[varianteReducere];
+		for (int i = 0; i < varianteReducere; i++)
+		{
+			this->reducere[i] = reducere[i];
+		}
+	}
+
+	friend istream& operator>>(istream& in, PachetPromotional& p)
+	{
+		in >> static_cast<Ghiveci&>(p);
+		//nu am implementat operatorul>> pentru clasa Seminte
+		cout << "Cate variante de reducere?" << endl;
+		in >> p.varianteReducere;
+		cout << "Reducerile: " << endl;
+		for (int i = 0; i < p.varianteReducere; i++)
+		{
+			cout << "Reducerea " << i + 1 << ": ";
+			in >> p.reducere[i];
+			cout << endl;
+		}
+
+		return in;
+
+	}
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int catePliculete2(int nrSeminteCeruteSpreVanzare)
 {
 	return nrSeminteCeruteSpreVanzare / Seminte::cantitate;
@@ -851,7 +1032,7 @@ int main()
 	cout << "Noul material este: " << g3.getMaterial() << endl;
 
 
-	Fertilizant f3(true, 2024, 45);
+	Fertilizant f3(true,2030);
 	f3.AfisareF();
 	cout << endl;
 	cout << "Preturile sunt: " << f3.getPret() << endl;
@@ -892,13 +1073,24 @@ int main()
 	//operator functie
 	cout << f1() << endl;
 
-
+	
 	string speciePlanta = (string)s1;
 	bool esteOrganic = (bool)f1;
 
 	cout << g1;
 	cin >> g2;
 
+
+
+	PachetPromotional pachet1;
+	FertilizantLichid fl1;
+
+	//upcasting
+
+	cout << (Ghiveci)pachet1 << endl;
+	cout << (Seminte)pachet1 << endl;
+
+	cout << (Fertilizant)fl1;
 
 	return 0;
 }
