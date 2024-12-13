@@ -16,6 +16,7 @@ public:
 		this->nume = "No name";
 		this->salariu = 1000;
 		
+
 	}
 
 	Angajat(int marca, string nume,float salariu)
